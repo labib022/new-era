@@ -11,17 +11,12 @@ const app = express()
 app.set('trust proxy', 1)
 app.use(helmet())
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://frontend-six-drab-78.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }))
-
-
 app.use(express.json())
-
-
 app.use(logger)
-
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -30,20 +25,16 @@ const limiter = rateLimit({
 })
 app.use(limiter)
 
-
-//  MongoDB Connect
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log('MongoDB Connected!'))
 .catch((err) => console.log(err))
 
-//  Routes
 const userRoutes = require('./routes/userRoutes')
 app.use('/users', userRoutes)
 
 const authRoutes = require('./routes/authRoutes')
 app.use('/auth', authRoutes)
 
-//  Server Start
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}! 🚀`)
